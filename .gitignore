@@ -1,0 +1,6 @@
+# VS Code
+.vscode
+
+# other .gitignore files are included per directory
+# client-react - for node.js/react.js
+# server-koa - for node.js 
