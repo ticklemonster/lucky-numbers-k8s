@@ -46,8 +46,3 @@ Contains the Kubernetes configuation
 - NodePort/websocket: exposes websockets on port 9001
 
 
-## TODO:
-- backend-cache: redis cache of recent lucky numbers
-
-
-3
