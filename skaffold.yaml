@@ -1,0 +1,22 @@
+apiVersion: skaffold/v1beta13
+kind: Config
+metadata:
+  name: Lucky Numbers
+build:
+  artifacts:
+  - image: ticklemon5ter/luckynumbers-server-api
+    context: server-koa
+  - image: ticklemon5ter/luckynumbers-client-web
+    context: client-react
+  local: {}
+test:
+deploy:
+  kubectl:
+    manifests:
+    - k8s/*.yaml
+# portForward:
+#   resourceType: {}
+#   resourceName:
+#   namespace:
+#   port:
+#   localPort:

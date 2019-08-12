@@ -1,0 +1,657 @@
+{
+	"info": {
+		"_postman_id": "d6167cdb-4145-41e7-a024-f42d9afffc8d",
+		"name": "Lucky Numbers - local dev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get most recent number",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e56f4e4e-7392-4b90-a190-91fa383f6166",
+						"exec": [
+							"pm.test(\"response should be okay\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"    pm.response.to.have.jsonBody(\"numbers\"); ",
+							"    pm.response.to.not.have.jsonBody(\"error\"); ",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"Reponse should have one number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.numbers.length).to.eql(1);",
+							"});",
+							"",
+							"pm.test(\"Response should be in the last minute\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.numbers[0].date - new Date()).to.be.below(60000);",
+							"    ",
+							"    pm.environment.set(\"last_number_date\", jsonData.numbers[0].date);",
+							"    pm.environment.set(\"last_number_value\", jsonData.numbers[0].value);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/numbers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"numbers"
+					]
+				},
+				"description": "Get the most recent number"
+			},
+			"response": []
+		},
+		{
+			"name": "Get last 10 numbers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "19acd835-37b0-4097-81dd-6edd8f7786c0",
+						"exec": [
+							"pm.test(\"response should be okay\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"    pm.response.to.have.jsonBody(\"numbers\"); ",
+							"    pm.response.to.not.have.jsonBody(\"error\"); ",
+							"});",
+							"",
+							"pm.test(\"Reponse should have ten numbesr\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.numbers.length).to.eql(10);",
+							"});",
+							"",
+							"pm.test(\"First response should be newer than the last response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.numbers[0].date).to.be.above(jsonData.numbers[9].date);",
+							"    ",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/numbers?length=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"numbers"
+					],
+					"query": [
+						{
+							"key": "length",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Get 10 most recent numbers"
+			},
+			"response": []
+		},
+		{
+			"name": "Get last number by date (from get most recent number)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3182e4da-e38b-4e18-a00e-f015740fe307",
+						"exec": [
+							"pm.test(\"response should be okay\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"    pm.response.to.have.jsonBody(\"numbers\"); ",
+							"    pm.response.to.not.have.jsonBody(\"error\"); ",
+							"});",
+							"",
+							"pm.test(\"Reponse should have one number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.numbers.length).to.eql(1);",
+							"});",
+							"",
+							"pm.test(\"Response should be the same as from get /api/numbers\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.numbers[0].date).to.eql(pm.environment.get(\"last_number_date\"));",
+							"    pm.expect(jsonData.numbers[0].value).to.eql(pm.environment.get(\"last_number_value\"));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/numbers/{{last_number_date}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"numbers",
+						"{{last_number_date}}"
+					]
+				},
+				"description": "Get the most recent number (after running the /api/numbers)"
+			},
+			"response": []
+		},
+		{
+			"name": "Can not POST a number",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8d849fcc-9140-4b6f-a9c1-0da95ba59eb4",
+						"exec": [
+							"pm.test(\"/api/numbers should not accept POST\", function () { ",
+							"    pm.response.to.be.error; ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"name\": \"JSON\", \"number\": 1234 }"
+				},
+				"url": {
+					"raw": "{{base_url}}/numbers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"numbers"
+					]
+				},
+				"description": "Numebrs does not accept POST"
+			},
+			"response": []
+		},
+		{
+			"name": "guess does not accept form-data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "54655529-4fc9-4c40-8dcd-7d8abdad8e69",
+						"exec": [
+							"pm.test(\"/api/guess should not accept form data\", function () { ",
+							"    pm.response.to.be.error; ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Brian",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/guesses",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "guess does not accept text",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "922f5cf1-0f60-450b-bf2a-d19f9d093ba2",
+						"exec": [
+							"pm.test(\"/api/numbers should not accept text\", function () { ",
+							"    pm.response.to.be.error; ",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/guesses",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cannot get a guess without an id (in body or cookie)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bf7ec5a2-a8a1-4a1a-9abd-ec5256b47c22",
+						"exec": [
+							"pm.test('GUESS should fail with no cookie', function() {",
+							"    pm.response.to.be.error;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c758cc3f-6cbd-4737-8617-976c976e6b93",
+						"exec": [
+							"id = pm.environment.get(\"last_guess_id\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/guesses",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses"
+					]
+				},
+				"description": "GET guess with no id passed:\n- if there is a cookie, then we should expect a redirect\n- if there is no cookie, this should return an error"
+			},
+			"response": []
+		},
+		{
+			"name": "POST a valid guess",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a2d438cb-1bb5-4f8c-b874-5c62de1751af",
+						"exec": [
+							"pm.test(\"Should accept JSON with value\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"});",
+							"",
+							"pm.test(\"should return the provided value and a reference number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.value).to.eql(pm.environment.get(\"guess_value\"));",
+							"    ",
+							"    pm.environment.set(\"last_guess_id\", jsonData.id);",
+							"});",
+							"",
+							"pm.test(\"should have set a cookie with the reference id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect( pm.cookies.has('luckynumbers:id') ).to.be.true;",
+							"    pm.expect( pm.cookies.get('luckynumbers:id') ).to.equal( jsonData.id );",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c611db4b-cea7-4c26-b2d1-2da6ce607461",
+						"exec": [
+							"pm.environment.set(\"guess_value\", Math.floor(Math.random() * 100) + 1);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"value\": {{guess_value}} }"
+				},
+				"url": {
+					"raw": "{{base_url}}/guesses",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Can GET the most recent /guess (using cookie)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2496d100-8d88-4360-8a2b-32acfd8be75a",
+						"exec": [
+							"pm.test(\"Should be successfuil\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"});",
+							"",
+							"pm.test(\"should return the provided value and a reference number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.value).to.eql(pm.environment.get(\"guess_value\"));",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"last_guess_id\"));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/guesses",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET the most recent guess by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2496d100-8d88-4360-8a2b-32acfd8be75a",
+						"exec": [
+							"pm.test(\"Should be successfuil\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"});",
+							"",
+							"pm.test(\"should return the provided value and a reference number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.value).to.eql(pm.environment.get(\"guess_value\"));",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"last_guess_id\"));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/guesses/{{last_guess_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses",
+						"{{last_guess_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a guess (by id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a2d438cb-1bb5-4f8c-b874-5c62de1751af",
+						"exec": [
+							"pm.test(\"Should accept JSON with value\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"});",
+							"",
+							"pm.test(\"should return the provided value and a reference number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.value).to.eql(pm.environment.get(\"guess_value\"));",
+							"    ",
+							"    pm.environment.set(\"last_guess_id\", jsonData.id);",
+							"});",
+							"",
+							"pm.test(\"should have set a cookie with the reference id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect( pm.cookies.has('luckynumbers:id') ).to.be.true;",
+							"    pm.expect( pm.cookies.get('luckynumbers:id') ).to.equal( jsonData.id );",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c611db4b-cea7-4c26-b2d1-2da6ce607461",
+						"exec": [
+							"pm.environment.set(\"guess_value\", Math.floor(Math.random() * 100) + 1);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"value\": {{guess_value}} }"
+				},
+				"url": {
+					"raw": "{{base_url}}/guesses/{{last_guess_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses",
+						"{{last_guess_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove the most recent guess by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2496d100-8d88-4360-8a2b-32acfd8be75a",
+						"exec": [
+							"pm.test(\"Should be successfuil\", function () { ",
+							"    pm.response.to.not.be.error; ",
+							"});",
+							"",
+							"pm.test(\"cookie should be cleared\", function () {",
+							"    pm.expect(pm.cookies.has(\"luckynumbers:id\")).to.be.false;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a3dd2381-3b90-4516-b05c-858f3bb4cf8e",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/guesses/{{last_guess_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses",
+						"{{last_guess_id}}"
+					]
+				},
+				"description": "use PUT to update an existing id"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove an already deleted id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2496d100-8d88-4360-8a2b-32acfd8be75a",
+						"exec": [
+							"console.log(pm.response);",
+							"",
+							"pm.test(\"Should be not found\", function () { ",
+							"    pm.response.to.have.status(404); ",
+							"});",
+							"",
+							"pm.environment.unset(\"last_guess_id\");",
+							"// pm.environment.unset(\"guess_value\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a3dd2381-3b90-4516-b05c-858f3bb4cf8e",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/guesses/{{last_guess_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"guesses",
+						"{{last_guess_id}}"
+					]
+				},
+				"description": "use PUT to update an existing id"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "463aba0c-490b-48ab-a0d0-73d58d04a638",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f6f9aa0a-e6be-4a7e-8de3-58a3f862b4bc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

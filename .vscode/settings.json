@@ -1,0 +1,13 @@
+{
+    "cloudcode.profile-cluster-map": {
+        "[default]": "minikube"
+    },
+    "redis-console.host": "localhost",
+    "redis-console.port": 6379,
+    "redis-console.password": "",
+    "redis-console.hostIpFamily": 4,
+    "redisXplorer.config": {
+        "profiles": [],
+        "scanLimit": 200
+    }
+}

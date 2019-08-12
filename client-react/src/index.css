@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.AttentionGrabber {
+  animation: 3s ease-out 0s 1 normal none running fade-from-red;
+  border: solid 1px black;
+}
+
+@keyframes fade-from-red {
+  0% { color: red; }
+  15% { color: darkred; }
+  30% { color: red; }
+  100% { color: #333333; }
+}
+
+.GridNumber {
+  text-align: center;
+}
+
+@media (max-width: 767.98px) {
+  .GridNumber {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* .Age0 { border: solid 1px #000000; } */
+.Age0 { border: solid 2px darkred; }
+.Age1 { border: solid 1px #141414; }
+.Age2 { border: solid 1px #282828; }
+.Age3 { border: solid 1px #3C3C3C; }
+.Age4 { border: solid 1px #505050; }
+.Age5 { border: solid 1px #646464; }
+.Age6 { border: solid 1px #787878; }
+.Age7 { border: solid 1px #8C8C8C; }
+.Age8 { border: solid 1px #A0A0A0; }
+.Age9 { border: solid 1px #B4B4B4; }
+.Age10 { border: solid 1px #C8C8C8; }
+
+button.active, button.active:visited, button.active:focus { 
+  font-weight: bold; 
+  color: darkblue; 
+  border: solid 1px darkblue;
+  border-radius: 20%;
+}
+.GridNumber > Button:hover {
+  color: white;
+  border-radius: 20%;
+  background-color: green;
+  border: solid 1px darkgreen;
+  text-decoration: none;
+}
+.GridNumber > Button.active:hover {
+  color: white;
+  background-color: red;
+  border: solid 1px darkred;
+}
+

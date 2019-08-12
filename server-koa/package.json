@@ -1,0 +1,20 @@
+{
+  "name": "gettickets-server",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {},
+  "dependencies": {
+    "co-body": "^6.0.0",
+    "koa": "^2.7.0",
+    "koa-route": "^3.2.0",
+    "mqtt": "^3.0.0",
+    "redis": "^2.8.0",
+    "uuid": "^3.3.2"
+  },
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "build": "docker build --tag ticklemon5ter/luckynumbers-server-api:latest .",
+    "push": "docker push ticklemon5ter/luckynumbers-server-api:latest"
+  }
+}

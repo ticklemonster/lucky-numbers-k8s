@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-web
+  labels:
+    app: luckynumbers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: luckynumbers
+      tier: frontend-web
+  template:
+    metadata:
+      labels:
+        app: luckynumbers
+        tier: frontend-web
+    spec:
+      containers:
+      - name: gettickets-app
+        image: ticklemon5ter/luckynumbers-client-web
+        ports:
+        - containerPort: 80
+        env:
+        - name: API_URL
+          value: http://$(API_SERVICE_HOST):$(API_SERVICE_PORT)/api
+        - name: BROKER_URL
+          value: ws://$(WEBSOCKET_SERVICE_HOST):$(WEBSOCKET_SERVICE_PORT)
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app: luckynumbers
+spec:
+  type: LoadBalancer
+  selector:
+    app: luckynumbers
+    tier: frontend-web
+  ports:
+    - port: 80
+      targetPort: 80
