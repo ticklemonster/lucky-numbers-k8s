@@ -44,5 +44,3 @@ Contains the Kubernetes configuation
 - toke/mosquitto MQTT messaging broker
   No special configuration
 - NodePort/websocket: exposes websockets on port 9001
-
-
