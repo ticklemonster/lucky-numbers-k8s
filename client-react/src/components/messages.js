@@ -1,38 +1,48 @@
 import React from 'react';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import ListGroupItem from 'react-bootstrap/ListGroupItem';
-import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 
-class Messages extends React.PureComponent {
-  
-  render() {
-    const { messages, online } = this.props;
+import Card from 'react-bootstrap/Card';
+import Alert from 'react-bootstrap/Alert';
 
-    return (
-      <Card>
-        <Card.Header as="h5">Messages</Card.Header>
-        {!online && <Card.Body><Card.Text><i>Offline</i></Card.Text></Card.Body>}
-        <ListGroup>
-          {messages.map(m => <ListGroupItem key={m.timestamp}>
-            {new Date(m.timestamp).toLocaleTimeString()}: {m.message}
-          </ListGroupItem>)}
-          {messages && messages.length === 0 && <ListGroupItem key="none">No Messages</ListGroupItem>}
-        </ListGroup>
-        <Card.Footer style={{ paddingTop: 5, paddingBottom: 5, fontSize: "small" }}>
-            <Button variant="link" size="sm" disabled={online}>Refresh</Button>
-        </Card.Footer>
-      </Card>
-    );
-  }
-}
+const Messages = ({ messages, online, onRefreshClick, onDismissClick }) => (
+  <Card className='primary'>
+    <Card.Header>
+      Messages <span style={{ float: "right" }}>{!online && <i>Offline</i>}</span>
+    </Card.Header>
+    <Card.Body>
+    { messages.map(m => 
+      <Alert key={m.id} variant={m.level || 'primary'} onClose={() => onDismissClick(m.id)} dismissible>
+        <small>{m.timestamp.toLocaleTimeString()}</small>
+        <br/>
+        {m.message}
+      </Alert>
+    )}
+    { messages.length > 0 && 
+      <Alert variant="light">
+        <Alert.Link href="#" onClick={onRefreshClick}>Dismiss All Messages</Alert.Link>
+      </Alert>
+    }
+    { messages.length === 0 && 
+      <Alert variant="light"><i>No messages</i></Alert>
+    }
+    </Card.Body>
+  </Card>
+);
 
 Messages.propTypes = {
-  messages: PropTypes.arrayOf(PropTypes.object).isRequired,
-  online: PropTypes.bool
+  messages: PropTypes.arrayOf(
+    PropTypes.shape({
+      timestamp: PropTypes.objectOf(Date).isRequired,
+      message: PropTypes.string.isRequired,
+      level: PropTypes.string,
+    })
+  ).isRequired,
+  online: PropTypes.bool,
+  onRefreshClick: PropTypes.func.isRequired,
 };
 
-
+Messages.defaultProps = {
+  online: false,
+}
 
 export default Messages;
