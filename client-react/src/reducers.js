@@ -70,10 +70,14 @@ function rootReducer(state, action) {
 
         case ActionTypes.addGuess:
             console.debug(`AddGuessAction: value=${action.value}`);
+            if (state.busy) return state;   // ignore presses if busy
+
             return { ...state, busy: true }
 
         case ActionTypes.deleteGuess:
             console.debug(`DelGuessAction: id=${action.id}`);
+            if (state.busy) return state;   // ignore presses if busy
+            
             return { ...state, busy: true }
         
         case ActionTypes.receiveGuess:
@@ -105,11 +109,21 @@ function rootReducer(state, action) {
             return { ...state, busy: false, messages: msgs };           
             
         case ActionTypes.messageOnline:
+            if (state.online) return state;
+
             return { ...state,
                 online: true, 
                 messages: addMessage(state.messages, 'info', 'Connected to live notifications') 
             };
 
+        case ActionTypes.messageOffline:
+            if (!state.online) return state;
+
+            return { ...state,
+                online: false, 
+                messages: addMessage(state.messages, 'warning', 'Disconnected. Use "Refresh" to update results'),
+            };
+        
         default:
             console.debug('rootReducer: action not handled: ', action);
             return state

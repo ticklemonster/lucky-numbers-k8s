@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Spinner from 'react-bootstrap/Spinner';
+
 import PropTypes from 'prop-types';
 
 const findValue = (o, v) => o.value === v;
@@ -31,7 +33,7 @@ const Numbers = ({ numbers, guesses, isBusy, onRefresh, onPlaceGuess, onClearGue
       
       numbergrid.push(
         <Col key={value} className={tdclasses.join(' ')}>
-          <Button variant="link" size="sm" active={active}
+          <Button variant="link" size="sm" active={active} disabled={isBusy}
             onClick={() => active ? onClearGuess(active) : onPlaceGuess(value)}
           >{valuelabel}</Button>
         </Col>
@@ -41,13 +43,14 @@ const Numbers = ({ numbers, guesses, isBusy, onRefresh, onPlaceGuess, onClearGue
 
   return (
     <Card id="play">
-      <Card.Header><strong>Guess a Lucky Number</strong></Card.Header>
+      <Card.Header>Guess a Lucky Number</Card.Header>
       <Card.Body>
         <Container><Row>{numbergrid}</Row></Container>
       </Card.Body>
       <Card.Footer style={{ paddingTop: 5, paddingBottom: 5, fontSize: "small" }}>
           Last number: <b>{lastItem.value}</b> at {new Date(lastItem.date).toLocaleTimeString()}
           <Card.Link style={{ float: "right" }}>
+            {isBusy && <Spinner animation="border" size="sm" variant="primary"/>}
             <Button variant="link" size="sm" disabled={isBusy} onClick={onRefresh}>Refresh</Button>
           </Card.Link>
       </Card.Footer>

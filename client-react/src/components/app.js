@@ -39,8 +39,8 @@ class App extends Component {
         <Row>
           <Col><JumboTitle /></Col>
         </Row>
-        <Row>
-          <Col xs={12} md={8}><NumbersGrid id="play"/>;</Col>
+        <Row style={{ marginBottom: 32 }}>
+          <Col xs={12} md={8}><NumbersGrid id="play"/></Col>
           <Col><VisibleMessages /></Col>
         </Row>
         <Row>
