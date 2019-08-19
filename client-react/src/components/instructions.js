@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 
 const Instructions = () => (
   <Card id="howto">
-    <Card.Header as="h5">Instructions</Card.Header>
+    <Card.Header>Instructions</Card.Header>
     <Card.Body>
       <Card.Title>Numbers</Card.Title>
       <Card.Text>

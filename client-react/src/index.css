@@ -59,3 +59,9 @@ button.active, button.active:visited, button.active:focus {
   border: solid 1px darkred;
 }
 
+.card-header {
+  font-weight: bolder;
+}
+.card-title {
+  border-bottom: solid 1px darkgray;
+}
