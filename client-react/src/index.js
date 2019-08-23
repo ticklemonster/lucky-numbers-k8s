@@ -1,25 +1,14 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
 
 import App from './components/app';
+import PushReceiver from './push-receiver';
+
 import './index.css';
 
-import rootReducer from './reducers';
-import httpMiddleware from './middleware/http-middleware';
-
-import registerServiceWorker from './registerServiceWorker';
-
-const store = createStore(
-    rootReducer,
-    applyMiddleware(httpMiddleware)
-);
+const pushReceiver = new PushReceiver();
 
 render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
+    <App receiver={pushReceiver}/>,
     document.getElementById('root')
 );
-registerServiceWorker();

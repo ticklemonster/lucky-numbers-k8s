@@ -1,27 +1,24 @@
 import React from 'react';
-import { connect } from 'react-redux';
+
+import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 
-const TopHeader = ({online}) => (
+const TopHeader = () => (
     <Navbar variant="dark" bg="dark" expand="lg" id="top">
-        <Navbar.Brand href="#home">Lucky Numbers</Navbar.Brand>
-        <Navbar.Collapse>
-        <Nav.Link variant="dark" href="#top">Home</Nav.Link>
-        <Nav.Link href="#play">Play</Nav.Link>
-        <Nav.Link href="#howto">How To Play</Nav.Link>
-        </Navbar.Collapse>
-        <Navbar.Collapse className="justify-content-end">
-        <Navbar.Text variant="dark">
-            {online ? '[Online]' : '[Offline]'}
-        </Navbar.Text>
-        </Navbar.Collapse>
+        <Container>
+            <Navbar.Brand variant="dark" bg="dark" href="#top">Lucky Numbers</Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav>
+                    <Nav.Link href="#top">Home</Nav.Link>
+                    <Nav.Link href="#play">Play</Nav.Link>
+                    <Nav.Link href="#howto">How To Play</Nav.Link>
+                </Nav>
+            </Navbar.Collapse>
+        </Container>
     </Navbar>
 )
 
-const mapStateToProps = state => ({
-    online: state.online
-});
-
-export default connect(mapStateToProps)(TopHeader);
+export default TopHeader;
     

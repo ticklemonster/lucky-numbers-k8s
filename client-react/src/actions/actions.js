@@ -1,12 +1,14 @@
-// // Events that could be received
-// export const Events = {
-//   errorEvent: 'error',
-//   changeEvent: 'change',
-//   onlineEvent: 'online',
-//   offlineEvent: 'offline',
-//   winnersEvent: 'winners',
-//   messageEvent: 'message',
-// }
+// Events that could be received
+export const Events = {
+  errorEvent: 'error',
+  changeEvent: 'change',
+  onlineEvent: 'online',
+  offlineEvent: 'offline',
+  newNumberEvent: 'number',
+  winnersEvent: 'winners',
+  messageEvent: 'message',
+
+}
 
 // Action types
 export const ActionTypes = {

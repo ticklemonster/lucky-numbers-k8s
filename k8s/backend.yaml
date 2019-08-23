@@ -27,9 +27,9 @@ spec:
           - name: PORT
             value: "3000"
           - name: REDIS_URL
-            value: redis://$(DATABASE_SERVICE_HOST):$(DATABASE_SERVICE_PORT)
+            value: redis://database:$(DATABASE_SERVICE_PORT)
           - name: BROKER_URL
-            value: ws://$(WEBSOCKET_SERVICE_HOST):$(WEBSOCKET_SERVICE_PORT)
+            value: ws://websocket:$(WEBSOCKET_SERVICE_PORT)
       imagePullSecrets:
         - name: regcred
 ---

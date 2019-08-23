@@ -34,11 +34,25 @@ const app = new Koa();
 // REDIS CONNECTION 
 // connect to redis at the app level
 // services can share this connection and its retry strategy
+const REDIS_MAX_RETRIES = 10;
+const REDIS_MAX_CONNECT = 15000;
 app.context.dbclient = redis.createClient({
   url: REDIS_URL,
   retry_strategy: (opts) => {
     // Retry forever with back-off
-    console.warn(`WARNING: REDIS connection offline - retry #${opts.attempt}`);
+    console.warn(`WARNING: REDIS connection retry - error ${opts.error && opts.error.code}, attempt #${opts.attempt} ${opts.total_retry_time}ms`);
+    if (opts.attempt > REDIS_MAX_RETRIES) {
+      console.error(`Database connect to ${app.context.dbclient.options.url} tried too many times`);
+      app.emit('close');
+      process.exit(0);
+      return new Error(`DB connection failed - many retries`);
+    }
+    if (opts.total_retry_time >= REDIS_MAX_CONNECT) {
+      console.error(`Database connect to ${app.context.dbclient.options.url} timed out after ${opts.total_retry_time}ms`);
+      app.emit('close');
+      process.exit(0);
+      return new Error('DB connection failed - timeout');
+    }
     return Math.min(opts.attempt * 1000, 10000); // backoff to no more than 10sec
   }
 })
@@ -74,7 +88,7 @@ app.context.mqclient
     console.log(`MQ Message on ${topic}: ${message.toString()}`);
   })
   .on('offline', function () {
-    console.log(`MQ Connection is OFFLINE`);
+    console.warn(`WARNING: MQ Connection is offline`);
   })
   .on('error', function(error) {
     console.error(`MQ error: ${err}`);
@@ -295,7 +309,5 @@ app.on('close', () => {
   app.context.dbclient.end(true);
   console.debug('---   APP DOWN   ---');
 });
-
-
 
 module.exports = app;

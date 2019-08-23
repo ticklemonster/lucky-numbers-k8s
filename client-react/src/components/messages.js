@@ -4,14 +4,16 @@ import PropTypes from 'prop-types';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
 
-const Messages = ({ messages, online, onRefreshClick, onDismissClick }) => (
-  <Card className='primary'>
+const Messages = ({ messages, online, onDismiss, onClear }) => {
+  
+  return (
+    <Card className='primary'>
     <Card.Header>
       Messages <span style={{ float: "right" }}>{!online && <i>Offline</i>}</span>
     </Card.Header>
     <Card.Body>
     { messages.map(m => 
-      <Alert key={m.id} variant={m.level || 'primary'} onClose={() => onDismissClick(m.id)} dismissible>
+      <Alert key={m.id} variant={m.level || 'primary'} onClose={() => onDismiss(m.id)} dismissible>
         <small>{m.timestamp.toLocaleTimeString()}</small>
         <br/>
         {m.message}
@@ -19,7 +21,7 @@ const Messages = ({ messages, online, onRefreshClick, onDismissClick }) => (
     )}
     { messages.length > 0 && 
       <Alert variant="light">
-        <Alert.Link href="#" onClick={onRefreshClick}>Dismiss All Messages</Alert.Link>
+        <Alert.Link href="#" onClick={onClear}>Dismiss All Messages</Alert.Link>
       </Alert>
     }
     { messages.length === 0 && 
@@ -27,7 +29,8 @@ const Messages = ({ messages, online, onRefreshClick, onDismissClick }) => (
     }
     </Card.Body>
   </Card>
-);
+  )
+};
 
 Messages.propTypes = {
   messages: PropTypes.arrayOf(
@@ -38,7 +41,8 @@ Messages.propTypes = {
     })
   ).isRequired,
   online: PropTypes.bool,
-  onRefreshClick: PropTypes.func.isRequired,
+  onDismiss: PropTypes.func.isRequired,
+  onClear: PropTypes.func.isRequired,
 };
 
 Messages.defaultProps = {
