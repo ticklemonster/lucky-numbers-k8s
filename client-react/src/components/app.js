@@ -25,7 +25,7 @@ const App = ({receiver}) => {
   const [numbers, setNumbers] = useState([]);
 
   const [guessRequest, setGuessRequest] = useState();
-  const [guess, setGuess] = useState(null);
+  const [guess, setGuess] = useState({});
 
   const [messages, setMessages] = useState([]);
   const [online, setOnline] = useState(false);
@@ -74,22 +74,24 @@ const App = ({receiver}) => {
     }
 
     async function deleteGuess() {
-      console.log(`+ DELETE guess (requested null)`);
-      if (!guess || !guess.id) {
-        console.debug('  no guess id to be cleared');
-        return;
-      }
-
-      fetch(`/api/guesses/${guess.id}`, {
-        method: "DELETE"
-      })
+      setGuess(async guess => {
+        if (!guess || !guess.id) {
+          console.debug('  no guess id to be cleared');
+          return null;
+        }
+        console.log(`+ DELETE guess (requested null)`);
+        fetch(`/api/guesses/${guess.id}`, {
+          method: "DELETE"
+        })
         .then(() => {
             console.debug(`- DELETE Guess successful.`);
-            setGuess(null);
+            return null;
         })
         .catch(error => {
-            console.debug(`- DELETE Guess error: /api/guesses/${guess.id} -- ${error}`);
+            console.debug(`- DELETE Guess error: /api/guesses -- ${error}`);
+            return {...guess, error }
         });
+      });
     }
 
     console.debug(`GuessRequest.useEffect - requesting: ${guessRequest}`);
