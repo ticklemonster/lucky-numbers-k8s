@@ -1,17 +1,28 @@
 # LUCKY NUMBERS
-This is a sample Lucky Numbers game to be implemented as a Kubernetes cluster
+A simple Lotteries-style Lucky Numbers game to be implemented as a Kubernetes cluster
 Developed on minikube with skaffold and test-deployed to Goole Cloud. 
+
+## RULES
+* 6 numbers are drawn from a set of 45 numbers, every minute (can be tuned in environment vars)
+* Guesses of 6 numbers are accepted up until the draw time
+* A guess can only be changed prior to a draw
+* Selecting 4 or more correct numbers wins a "prize"
+
 
 ## TO DO ##
 * CLIENT
+    * redo to follow the new "choose 6" approach
     * accept "WINNER" messages
-    * deal with a "GUESS" being a temporary
+    * deal with a "GUESS" being a temporary (delete it after a claim?)
     * show "new number", "guess win/lose" as messages
     * implement "guess input" (small-screen) control
 
 * SERVER
-    * Set a "guess" to have a limited lifespan (until next number draw). Include draw time/timeout in the response.
+    * Clean up old "guesses" after a period of time?
+    * Clean up old "results" after a period of time?
     * Make sure server process will exit on critical failures. Let Kubernetes do the restart to try reconnecting.
+    * Add API to retrieve statistics for drawn numbers (recorded in Redis already)
+    * Consider kubernetes cron jobs to manage the RNG (guaranteed at least once, but could run any time during the minute - how time accurate do we need to be?)
 
 * KUBERNETES
     * Revisit internal networking in Kubernetes (remove nodeports from internal services when not in dev)?
