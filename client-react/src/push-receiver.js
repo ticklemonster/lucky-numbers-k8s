@@ -8,8 +8,6 @@ import { Events } from './actions/actions';
 import { EventEmitter } from 'events';
 
 const TOPIC_NUMBERS = 'numbers';
-const NEW_NUMBER_MESSAGE = 'NEW_NUMBER';
-const WINNERS_MESSAGE = 'WINNERS';
 
 class PushReceiver extends EventEmitter {
   constructor() {
@@ -32,12 +30,12 @@ class PushReceiver extends EventEmitter {
   onConnect() {
     console.log(`Mqtt connected to ${this.client.options.href} as ${this.client.options.clientId}`);
     this.client.subscribe(TOPIC_NUMBERS); // always listen for numbers
-    this.emit(Events.onlineEvent);
+    this.emit(Events.ONLINE);
   }
 
   onClose() {
     console.log(`Mqtt disconnected from ${this.client.options.href}`);
-    this.emit(Events.offlineEvent);
+    this.emit(Events.OFFLINE);
   }
 
   isConnected() {
@@ -48,16 +46,17 @@ class PushReceiver extends EventEmitter {
     try {
       const msg = JSON.parse(buffer.toString());
       switch (msg.action) {
-        case NEW_NUMBER_MESSAGE:
-          console.log(`Received NEW_NUMBER_MESSAGE: ${msg.number.value} at ${msg.number.date}`);
-          msg.number.date = new Date(msg.number.date);
-          msg.number.value = parseInt(msg.number.value);
-          this.emit(Events.newNumberEvent, msg.number);
+        case Events.NEW_DRAW_RESULTS:
+          console.log(`Received NEW_DRAW_RESULT: ${msg.results.numbers} at ${msg.results.date}`);
+          this.emit(Events.NEW_DRAW_RESULTS, {
+            ...msg.results,
+            "date": new Date(msg.results.date)
+          });
           break;
 
-        case WINNERS_MESSAGE:
-          console.debug(`Received WINNERS_MESSAGE: ${msg.guesses}`);
-          this.emit(Events.winnersEvent, msg.guesses);
+        case Events.GUESS_RESULTS:
+          console.debug(`Received GUESS_RESULTS:`, msg);
+          this.emit(Events.GUESS_RESULTS, msg);
           break;
 
         default:

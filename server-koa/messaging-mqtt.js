@@ -3,7 +3,7 @@
 
 const mqtt = require('mqtt');
 
-class GuessesApi {
+class Messaging {
     constructor(url) {
         this.version = '0.1';
         this.mqtt = mqtt.connect(url);
@@ -13,7 +13,7 @@ class GuessesApi {
         .on('offline', () => console.warn(`WARNING: MQ Connection is offline`))
         .on('error', err =>  console.error(`MQ error: ${err}`))
         .on('message', (topic, message) => {
-            // message is Buffer
+            // message is a Buffer, need to convert it to a string
             console.log(`MQ Message on ${topic}: ${message.toString()}`);
         });
     };
@@ -22,11 +22,8 @@ class GuessesApi {
         this.mqtt.end();
     }
 
-    ready() {
-        return this.redis.ready;
-    }
-
     sendMessage(topic, message) {
+        console.log(`Send message on ${topic}: ${JSON.stringify(message)}`);
         this.mqtt.publish(topic, message);
     }
 
@@ -35,4 +32,4 @@ class GuessesApi {
     }
 }
 
-module.exports = GuessesApi;
+module.exports = Messaging;

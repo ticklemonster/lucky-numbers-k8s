@@ -5,19 +5,21 @@ const Instructions = () => (
   <Card id="howto">
     <Card.Header>Instructions</Card.Header>
     <Card.Body>
-      <Card.Title>Numbers</Card.Title>
+      <Card.Title>Lucky Draws</Card.Title>
       <Card.Text>
-        A random number between 1 and 100 is drawn every minute.
-        The last 10 numbers are highlighted on the board.
+        Six random numbers are drawn from a pool of 45 every minute.
+        <br />
+        <a href="#recent">Recent results</a> and <a href="#statistics">statistics</a> are available to help you choose.
       </Card.Text>
       <Card.Title>Guesses</Card.Title>
       <Card.Text>
-        Place a guess by selecting a number on the board.
-        Cancel your guess by selecting the number again or choosing a different number
+        Place a guess by selecting 6 numbers from the <a href="#play">board</a>. Click a selected number again to unselect it. 
+        When 6 numbers are selected, choose "Guess" to place the guess. 
+        Recent guesses are recorded and you can "Guess Again" for a previous guess. 
       </Card.Text>
       <Card.Title>Winners</Card.Title>
       <Card.Text>
-        You win if you guess correctly.
+        You win if you guess 4 or more numbers for any draw.
       </Card.Text>
     </Card.Body>
   </Card>

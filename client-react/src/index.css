@@ -16,17 +16,6 @@ body {
   100% { color: #333333; }
 }
 
-.GridNumber {
-  text-align: center;
-}
-
-@media (max-width: 767.98px) {
-  .GridNumber {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-}
-
 /* .Age0 { border: solid 1px #000000; } */
 .Age0 { border: solid 2px darkred; }
 .Age1 { border: solid 1px #141414; }
@@ -46,6 +35,13 @@ button.active, button.active:visited, button.active:focus {
   border: solid 1px darkblue;
   border-radius: 20%;
 }
+
+.GridNumber {
+  text-align: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
 .GridNumber > Button:hover {
   color: white;
   border-radius: 20%;
@@ -59,9 +55,13 @@ button.active, button.active:visited, button.active:focus {
   border: solid 1px darkred;
 }
 
-.card-header {
-  font-weight: bolder;
+span.matched {
+  color: red;
+  border: solid 1px darkred;
+  border-radius: 40%;
 }
+
+/*
 .card-title {
   border-bottom: solid 1px darkgray;
-}
+} */

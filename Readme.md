@@ -1,6 +1,6 @@
 # LUCKY NUMBERS
 A simple Lotteries-style Lucky Numbers game to be implemented as a Kubernetes cluster
-Developed on minikube with skaffold and test-deployed to Goole Cloud. 
+Developed on minikube with skaffold and test-deployed to Google Cloud. 
 
 ## RULES
 * 6 numbers are drawn from a set of 45 numbers, every minute (can be tuned in environment vars)
@@ -11,22 +11,22 @@ Developed on minikube with skaffold and test-deployed to Goole Cloud.
 
 ## TO DO ##
 * CLIENT
-    * redo to follow the new "choose 6" approach
-    * accept "WINNER" messages
     * deal with a "GUESS" being a temporary (delete it after a claim?)
-    * show "new number", "guess win/lose" as messages
-    * implement "guess input" (small-screen) control
+    * update guesses with results and show guesses with results differently from those waiting.
+    * store guesses in local storage (to recover after a refresh)
+    * show "new number", "guess win/lose" as messages?
+    * show a "time to next draw" countdown?
 
 * SERVER
-    * Clean up old "guesses" after a period of time?
-    * Clean up old "results" after a period of time?
-    * Make sure server process will exit on critical failures. Let Kubernetes do the restart to try reconnecting.
+    * Clean up old "guesses" after a period of time (or move to persistent store)?
+    * Clean up old "results" after a period of time (or move to persistent store)?
+    * Make sure server process will exit on critical failures. Let Kubernetes do the restart.
     * Add API to retrieve statistics for drawn numbers (recorded in Redis already)
-    * Consider kubernetes cron jobs to manage the RNG (guaranteed at least once, but could run any time during the minute - how time accurate do we need to be?)
 
 * KUBERNETES
     * Revisit internal networking in Kubernetes (remove nodeports from internal services when not in dev)?
-    * Use coredns to find services (rather than environment vars)
+    * CONSIDER: Use coredns to find services (rather than environment vars)?
+    * CONSIDER: Kubernetes cron jobs to manage the RNG (guaranteed at least once, but could run any time during the minute - how time accurate do we need to be?)
 
 
 
@@ -44,9 +44,9 @@ Package into Dockerfile *ticklemon5ter/luckynumbers-client-web* on image httpd2.
 * Recent Changes
     * Migrated to react-bootstap:^1.0 / boostrap 4
     * Upgraded to react-scripts:3.0.1
-        * Added "setupProxy.js" to proxy /api and /ws in development (to auto-configure to the skaffold deployment on minikube)
+    * Added "setupProxy.js" to proxy /api and /ws in development (to auto-configure to the skaffold deployment on minikube)
     * Upgraded to react:^16.8
-        * Removed Redux and moved to native react hooks (enough for such a simple app)
+    * Removed Redux and moved to native react hooks (enough for such a simple app)
     * Removed "superagent" and reverted to "fetch" (now included updated react)
 
 ### server-koa
@@ -55,6 +55,9 @@ Serves API calls to get numbers and take a guess
 API Testing in the "tests" folder uses Postman
 
 Package into Dockerfile *ticklemon5ter/luckynumbers-server-api* from image node
+
+* Recent Changes
+    * Sends a message for each guess after it is drawn, topic: "guess/{id}" (win or lose)
 
 ### k8s
 Contains the Kubernetes configuation

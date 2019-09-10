@@ -53,36 +53,36 @@ app.use (async (ctx, next) => {
 //
 // NUMBERS API
 // -----------
-// GET /api/numbers - returs last number, or use ?length=x to return last x numbers
+// GET /api/results - returs last number, or use ?length=x to return last x numbers
 // GET /api/numebrs/:timestamp - returns the number from a given timestamp (unix epoch)
 //
 // GET last number (or last "length" numbers)
-app.use(route.get('/api/numbers', async ctx => {
-  console.log('GET /api/numbers', ctx.query);
+app.use(route.get('/api/results', async ctx => {
+  console.log('GET /api/results', ctx.query);
   const length = parseInt(ctx.query['length']) || 1;
   // ctx.response.type = 'application/json';
 
   let rval = await ctx.datastore.getLastNResults(length);
-  rval = rval.map(n => ({...n, "ref": `/api/numbers/${n.id}` }));
+  rval = rval.map(n => ({...n, "ref": `/api/results/${n.id}` }));
 
   ctx.response.body = { "results": rval };
 }));
 
 // GET number from a specified timestamp
-app.use(route.get('/api/numbers/:timestamp', async (ctx, tsstr) => {
+app.use(route.get('/api/results/:timestamp', async (ctx, tsstr) => {
     const tsmsec = parseInt(tsstr);
     const timestamp = (tsmsec == tsstr) ? new Date(tsmsec) : new Date(tsstr);
-    console.log(`GET /api/numbers/${tsstr} => numbers:${timestamp.valueOf()}`);
+    console.log(`GET /api/results/${tsstr} => numbers:${timestamp.valueOf()}`);
 
     if (timestamp == 'Invalid Date') {
-        ctx.throw(400, `Date supplied in /api/numbers is not valid. ${tsstr}`);
+        ctx.throw(400, `Date supplied in /api/results is not valid. ${tsstr}`);
         return;
     }
 
     // console.log(`Get number at timestamp: ${timestamp.valueOf()} (${timestamp.toISOString()})`);
     ctx.response.type = 'application/json';
     let rval = await ctx.datastore.getResultsByDate(timestamp);
-    rval.ref = `/api/numbers/${rval.id}`;
+    rval.ref = `/api/results/${rval.id}`;
     ctx.response.body = { 'results': [ rval ] }; 
 }));
 
@@ -161,7 +161,9 @@ app.use(route.get('/api/guesses/:id', async (ctx, id) => {
     if (rval.for_date < Date.now()) {
       console.debug(`GET /api/guesses/${id} - should have results`);
       const results = await ctx.datastore.getResultsByDate(rval.for_date);
-      rval.results = results;
+      if (results) {
+        rval.results = `/api/results/${results.id}`
+      }
     }
     
     ctx.response.body = rval;
@@ -292,7 +294,7 @@ async function pickNumbers(ctx) {
         "results": resultsObj 
       }));    
       
-      // TODO: Check for winners
+      // Check for winners
       const results = await ctx.datastore.getGuessResultsByDate(resultsObj.date);
       const winners = results.filter(r => r.matches.length > PICK_NUMBERS / 2);
       console.debug(`current draw had ${winners.length} winners from ${results.length} entries`);
@@ -301,12 +303,14 @@ async function pickNumbers(ctx) {
         if (r.matches.length > PICK_NUMBERS/2) 
           console.debug(`WINNER - Guess ${r.guess} got ${r.matches.length} of ${PICK_NUMBERS}`);
 
-        ctx.messaging.sendMessage(r.guess, JSON.stringify({
+        const resultMessage = {
           "action": "GUESS_RESULTS",
-          "id": r.guess.split(':')[1],
+          "date": resultsObj.date,
+          "guess": r.guess.split(':')[1],
           "matches": r.matches,
           "prize": (r.matches.length > PICK_NUMBERS / 2) ? `${r.matches.length} of ${PICK_NUMBERS}` : 'none',
-        }))
+        };          ;
+        ctx.messaging.sendMessage(`guess/${resultMessage.guess}`, JSON.stringify(resultMessage));
       })
     }
   } catch (err) {
